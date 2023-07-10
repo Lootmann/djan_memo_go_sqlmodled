@@ -1,23 +1,37 @@
-from typing import Optional
+from sqlmodel import Session, SQLModel, create_engine, select
 
-from sqlmodel import Field, Session, SQLModel, create_engine
+from models.examples import Example
+from models.words import Word
+
+engine = create_engine("sqlite:///test.db")
+SQLModel.metadata.create_all(engine)
 
 
-class Word(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    spell: str
-    meaning: str
+def insert_db():
+    with Session(engine) as session:
+        word = Word(spell="hello", meaning="こんにちは")
+        session.add(word)
+        session.commit()
+
+        example = Example(
+            sentence="hello world", translation="こんにちは、せかい", word_id=word.id
+        )
+        session.add(example)
+        session.commit()
+
+
+def select_db():
+    with Session(engine) as session:
+        statement = select(Word)
+        words = session.exec(statement)
+
+        for word in words:
+            print(word)
 
 
 def main():
-    engine = create_engine("sqlite:///test.db")
-    SQLModel.metadata.create_all(engine)
-
-    word = Word(spell="hello", meaning="こんにちは")
-
-    with Session(engine) as session:
-        session.add(word)
-        session.commit()
+    insert_db()
+    select_db()
 
 
 if __name__ == "__main__":
