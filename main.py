@@ -13,10 +13,16 @@ def insert_db():
         session.add(word)
         session.commit()
 
-        example = Example(
+        example1 = Example(
             sentence="hello world", translation="こんにちは、せかい", word_id=word.id
         )
-        session.add(example)
+
+        example2 = Example(
+            sentence="hello, goodbye", translation="こんにちは、さようなら", word_id=word.id
+        )
+
+        session.add(example1)
+        session.add(example2)
         session.commit()
 
 
@@ -27,6 +33,7 @@ def select_db():
 
         for word in words:
             print(word)
+            print(word.examples)
 
 
 def main():
